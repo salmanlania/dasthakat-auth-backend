@@ -35,9 +35,16 @@ export const verifyOtpController = async (req, res) => {
 export const register = async (req, res) => {
   try {
     const { email, password, full_name } = req.body;
-    if (!email || !password) return res.status(400).json({ error: 'Missing fields' });
+    console.log('Register attempt', req.body);
+    if (!email || !password) return (
+      // console.log('Missing fields' , {
+      //   email,
+      //   password
+      // }),
+      res.status(400).json({ error: 'Missing fields' })
+    );
 
-    const { data: existing } = await supabaseAdmin.from('customers').select('id').eq('email', email).single();
+    const { data: existing } = await supabaseAdmin.from('users').select('id').eq('email', email).single();
     if (existing && existing.id) return res.status(400).json({ error: 'User already exists' });
 
     const passwordHash = await hashPassword(password);
@@ -49,7 +56,7 @@ export const register = async (req, res) => {
       created_at: new Date().toISOString(),
     };
 
-    const { data, error } = await supabaseAdmin.from('customers').insert([insertObj]).select('*').single();
+    const { data, error } = await supabaseAdmin.from('users').insert([insertObj]).select('*').single();
     if (error) throw error;
 
     const payload = { id: data.id, email: data.email, role: 'customer' };
@@ -76,7 +83,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Missing fields' });
 
-    const { data, error } = await supabaseAdmin.from('customers').select('*').eq('email', email).single();
+    const { data, error } = await supabaseAdmin.from('users').select('*').eq('email', email).single();
     if (error || !data) return res.status(400).json({ error: 'Invalid credentials' });
 
     if (!data.password_hash) return res.status(400).json({ error: 'No password set; please use OTP flow' });
@@ -116,7 +123,7 @@ export const refreshToken = async (req, res) => {
       return res.status(401).json({ error: 'Invalid refresh' });
     }
 
-    const { data } = await supabaseAdmin.from('customers').select('*').eq('id', payload.id).single();
+    const { data } = await supabaseAdmin.from('users').select('*').eq('id', payload.id).single();
     if (!data) return res.status(404).json({ error: 'User not found' });
 
     const access = createAccessToken({ id: data.id, email: data.email, role: 'customer' });
