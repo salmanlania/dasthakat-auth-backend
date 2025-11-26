@@ -16,7 +16,7 @@ export const sendOtpEmail = async ({ to, otp, purpose }) => {
   const subject = purpose === 'signup' ? 'Your Signup OTP' : 'Your Verification Code';
   const html = (await import('../templates/otpEmailTemplate.js')).default(otp, purpose);
   const info = await transporter.sendMail({
-    from: `"Obliqware" <${process.env.ZOHO_USER}>`,
+    from: `"Dasthakat" <${process.env.ZOHO_USER}>`,
     to,
     subject,
     html,

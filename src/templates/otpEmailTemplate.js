@@ -7,7 +7,7 @@ export default (otp, purpose = 'verification') => {
       <p>This code will expire in ${process.env.OTP_TTL_MINUTES || 10} minutes.</p>
       <p>If you didn't request this, ignore this email.</p>
       <hr />
-      <small>Obliqware · ${new Date().getFullYear()}</small>
+      <small>Dasthakat · ${new Date().getFullYear()}</small>
     </div>
   `;
 };

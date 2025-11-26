@@ -1,4 +1,4 @@
-# Obliqware Auth Server (OTP + JWT + Supabase)
+# Dasthakat Auth Server (OTP + JWT + Supabase)
 
 Minimal auth server implementing:
 - Request OTP (email via Zoho SMTP)

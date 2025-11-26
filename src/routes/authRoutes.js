@@ -4,7 +4,8 @@ import {
   verifyOtpController,
   register,
   login,
-  refreshToken
+  refreshToken,
+  adminLogin
 } from '../controllers/authController.js';
 
 const router = express.Router();
@@ -13,6 +14,7 @@ router.post('/request-otp', requestOtp);
 router.post('/verify-otp', verifyOtpController);
 router.post('/register', register);
 router.post('/login', login);
+router.post('/admin-login', adminLogin);
 router.post('/refresh', refreshToken);
 
 export default router;

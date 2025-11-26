@@ -110,6 +110,38 @@ export const login = async (req, res) => {
   }
 };
 
+export const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'Missing fields' });
+
+    const { data, error } = await supabaseAdmin.from('admin').select('*').eq('email', email).single();
+    if (error || !data) return res.status(400).json({ error: 'Invalid credentials' });
+
+    if (!data.password_hash) return res.status(400).json({ error: 'No password set; please use OTP flow' });
+
+    const match = await compareHash(password, data.password_hash);
+    if (!match) return res.status(400).json({ error: 'Invalid credentials' });
+
+    const payload = { id: data.id, email: data.email, role: 'admin' };
+    const access = createAccessToken(payload);
+    const refresh = createRefreshToken({ id: data.id });
+
+    res.cookie('refresh_token', refresh, {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE === 'true',
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      domain: process.env.COOKIE_DOMAIN || undefined,
+    });
+
+    return res.json({ ok: true, token: access, customer_id: data.id });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Login failed' });
+  }
+};
+
 export const refreshToken = async (req, res) => {
   try {
     const refresh = req.cookies['refresh_token'];
