@@ -16,3 +16,10 @@ create table if not exists public.otps (
   expires_at timestamptz not null,
   created_at timestamptz default now()
 );
+
+alter table if exists public.admin
+  add column if not exists email text,
+  add column if not exists admin_name text,
+  add column if not exists password_hash text,
+  add column if not exists is_email_verified boolean default false,
+  add column if not exists created_at timestamptz default now();

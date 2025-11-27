@@ -113,15 +113,19 @@ export const login = async (req, res) => {
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Admin login attempt', req.body);
     if (!email || !password) return res.status(400).json({ error: 'Missing fields' });
 
     const { data, error } = await supabaseAdmin.from('admin').select('*').eq('email', email).single();
-    if (error || !data) return res.status(400).json({ error: 'Invalid credentials' });
+    console.log('Admin login data', {data, error});
+    // if (error || !data) return res.status(400).json({ error: 'Invalid credentials' });
+    if (error || !data) return res.status(400).json({ error: 'Invalid data' });
 
     if (!data.password_hash) return res.status(400).json({ error: 'No password set; please use OTP flow' });
 
     const match = await compareHash(password, data.password_hash);
-    if (!match) return res.status(400).json({ error: 'Invalid credentials' });
+    // if (!match) return res.status(400).json({ error: 'Invalid credentials' });
+    if (!match) return res.status(400).json({ error: 'Invalid pass' });
 
     const payload = { id: data.id, email: data.email, role: 'admin' };
     const access = createAccessToken(payload);
@@ -135,8 +139,9 @@ export const adminLogin = async (req, res) => {
       domain: process.env.COOKIE_DOMAIN || undefined,
     });
 
-    return res.json({ ok: true, token: access, customer_id: data.id });
+    return res.json({ ok: true, token: access, admin_id: data.id });
   } catch (err) {
+    console.log('err', err);
     console.error(err);
     return res.status(500).json({ error: 'Login failed' });
   }
