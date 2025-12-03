@@ -8,6 +8,7 @@ dotenv.config();
 import authRoutes from './src/routes/authRoutes.js';
 import orderRoutes from "./src/routes/orderRoutes.js";
 import adminOrderRoutes from "./src/routes/adminOrderRoutes.js";
+import adminStatsRoutes from "./src/routes/adminStatsRoutes.js";
 
 const app = express();
 app.use(helmet());
@@ -21,6 +22,7 @@ app.use(cors({
 app.use('/api/auth', authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
+app.use("/api/admin/stats", adminStatsRoutes);
 
 app.get('/', (req, res) => res.send('Auth server running'));
 
